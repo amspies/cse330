@@ -23,6 +23,8 @@ struct elem *newQueue()
 	newElement->next = newElement;
 	newElement->prev = newElement;
 	newElement->payload = -1;
+
+	return newElement;
 }
 
 struct elem *addQueue(struct elem *head, struct elem *item)
@@ -39,6 +41,8 @@ struct elem *addQueue(struct elem *head, struct elem *item)
 	temp->next = item;
 	item->next = head;
 	head->prev = item;
+
+	return head;
 }
 
 
