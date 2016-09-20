@@ -22,11 +22,14 @@ struct elem *newQueue()
 	struct elem *newElement = newItem();
 	newElement->next = newElement;
 	newElement->prev = newElement;
-	payload = -1;
+	newElement->payload = -1;
 }
 
 struct elem *addQueue(struct elem *head, struct elem *item)
 {
+	if (item == NULL)
+		item = newItem();
+
 	struct elem *temp = head;
 
 	while (temp->next->payload != -1)
