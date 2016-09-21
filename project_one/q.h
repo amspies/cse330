@@ -28,22 +28,25 @@ struct elem *newQueue()
 	return newElement;
 }
 
-struct elem *addQueue(struct elem *head, struct elem *item)
+/* adds item to queue. if item exists, returns */
+void addQueue(struct elem *head, struct elem *item)
 {
 	if (item == NULL)
 		item = newItem();
 
 	struct elem *temp = head;
 
-	while (temp->next->payload != -1)
+	while (temp->next->payload != -1) {
+		if (temp == item)
+			return;
+
 		temp = temp->next;
+	}
 
 	item->prev = temp;
 	temp->next = item;
 	item->next = head;
 	head->prev = item;
-
-	return head;
 }
 
 
@@ -60,9 +63,16 @@ struct elem *delQueue(struct elem *head)
 	return temp;
 }
 
-void freeItem(struct elem *toDelete)
+/**
+ * NOTE: free() will free the memory so it can be used by another
+ * pointer. The pointer "element", in this instance, still
+ * points to the same memory address it used to. So, we
+ * assign it NULL so that it can be used again, if necessary.
+ */
+void *freeItem(struct elem *element)
 {
-	free(toDelete);
+	free(element);
+	return NULL;
 }
 
 #endif
