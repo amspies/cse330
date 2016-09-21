@@ -20,6 +20,7 @@ struct elem *newItem()
 struct elem *newQueue()
 {
 	struct elem *newElement = newItem();
+
 	newElement->next = newElement;
 	newElement->prev = newElement;
 	newElement->payload = -1;
@@ -61,7 +62,7 @@ struct elem *delQueue(struct elem *head)
 
 void freeItem(struct elem *toDelete)
 {
-	delete(toDelete);
+	free(toDelete);
 }
 
 #endif
