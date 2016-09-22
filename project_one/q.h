@@ -9,7 +9,6 @@ struct elem {
 	int payload;
 };
 
-
 struct elem *newItem()
 {
 	struct elem *newElement = malloc(sizeof(struct elem));
@@ -49,7 +48,7 @@ void addQueue(struct elem *head, struct elem *item)
 	head->prev = item;
 }
 
-
+/* removes item from queue. if queue is empty, returns NULL */
 struct elem *delQueue(struct elem *head)
 {
 	struct elem *temp = NULL;
@@ -58,7 +57,7 @@ struct elem *delQueue(struct elem *head)
 		temp = head->next;
 		head->next->next->prev = head;
 		head->next = head->next->next;
-	}
+	} 
 
 	return temp;
 }
