@@ -3,28 +3,36 @@
 
 #include "threads.h"
 
-typedef struct semaphore {
+struct semaphore {
 	int value;
-	struct TCB_t **queue;
-} semaphore;
+	struct TCB_t *queue;
+};
 
-void newSemaphore(semaphore *sem, int value)
+void newSemaphore(struct semaphore *sem, int value)
 {
 	sem->value = value;
 }
 
-void wait(semaphore *sem)
+void P(struct semaphore *sem)
 {
 	sem->value--;
-	if (sem->value < 0)
-	// Curr_Thread gets added to sem->queue
-	// New thread selected from ReadyQ and put in Curr_Thread
-	// swapcontext
+	if (sem->value < 0) {
+		//rotateQueue(&runQ);
+		struct TCB_t *currThread = delQueue(&runQ);
+		addQueue(&(sem->queue), currThread);
+		while (runQ == NULL) ;
+		swapcontext(&(currThread->context), &(runQ->context));
+	}
 }
 
-void signal(semaphore *sem)
+void V(struct semaphore *sem)
 {
-
+	sem->value++;
+	if (sem->value <= 0 && sem->queue != NULL) {
+		//rotateQueue(&runQ);
+		addQueue(&runQ, delQueue(&(sem->queue)));
+	}
+	yield();
 }
 
 

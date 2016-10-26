@@ -17,7 +17,7 @@ struct TCB_t *newItem()
 
 void addQueue(struct TCB_t **head, struct TCB_t *item)
 {
-	TCB_t *temp = *head;
+	struct TCB_t *temp = *head;
 	if (temp == NULL) {
 		*head = item;
 		(*head)->next = *head;
@@ -39,26 +39,29 @@ void addQueue(struct TCB_t **head, struct TCB_t *item)
 
 struct TCB_t *delQueue(struct TCB_t **head)
 {
-	TCB_t *del = *head;
-	if (del->next == del) {
+	struct TCB_t *item = *head;
+	if (item->next == item) {
 		*head = NULL;
 	} else {
-		while (del->next != *head) {
-			del = del->next;
+		while (item->next != *head) {
+			item = item->next;
 		}
-		del->prev->next = del->next;
-		del->next->prev = del->prev;
+		item->prev->next = item->next;
+		item->next->prev = item->prev;
 	}
 
-	return del;
+	return item;
 }
 
-void rotateQueue(struct TCB_t **head)
+struct TCB_t *rotateQueue(struct TCB_t **head)
 {
+	struct TCB_t *temp = NULL;
 	if (head != NULL) {
-		TCB_t* temp = *head;
+		temp = *head;
 		*head = temp->next;
 	}
+
+	return temp;
 }
 
 void freeItem(void *item)
@@ -66,21 +69,21 @@ void freeItem(void *item)
 	free(item);
 }
 
-void printQueue(struct TCB_t *headPtr)
+void printQueue(struct TCB_t *head)
 {
-	if (headPtr == NULL) {
+	if (head == NULL) {
 		puts("queue head is null");
 		return;
 	}
 
-	if (headPtr->next == headPtr) {
-		printf("\t%p\n", headPtr);
+	if (head->next == head) {
+		printf("\t%p\n", head);
 	} else {
-		TCB_t *current = headPtr;
+		struct TCB_t *current = head;
 		do {
 			printf("\t%p\n", current);
 			current = current->next;
-		} while (current != headPtr);
+		} while (current != head);
 	}
 }
 
