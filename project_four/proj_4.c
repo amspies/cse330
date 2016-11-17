@@ -12,8 +12,8 @@ int array[3] = {0, 0, 0};
 void parent()
 {
 	while (1) {
-		P(s3); P(s3); P(s3);
-		printf("[ %d %d %d ]\n\n", array[0], array[1], array[2]);
+		P(s3);
+		printf("[ %d %d %d ]\n", array[0], array[1], array[2]);
 		sleep(1);
 		V(s0); V(s1); V(s2);
 	}
@@ -21,7 +21,6 @@ void parent()
 
 void c0()
 {
-
 	while(1) {
 		P(s0);
 		array[0]++;
@@ -66,9 +65,9 @@ int main(int argc, char *argv[])
 	s2 = (struct semaphore *)malloc(sizeof(struct semaphore));
 	s3 = (struct semaphore *)malloc(sizeof(struct semaphore));
 
-	newSemaphore(s0, 1);
-	newSemaphore(s1, 1);
-	newSemaphore(s2, 1);
+	newSemaphore(s0, 0);
+	newSemaphore(s1, 0);
+	newSemaphore(s2, 0);
 	newSemaphore(s3, 3);
 
 	newQueue(&runQ);
@@ -83,11 +82,9 @@ int main(int argc, char *argv[])
 			startThread(threads[i], c1);
 		else if (i == 0)
 			startThread(threads[i], c0);
-
-
 	}
 
-	srand((unsigned) time(NULL));
+	srand((unsigned)time(NULL));
 	puts("\nstarting threads\n");
 	run();
 
