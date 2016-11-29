@@ -8,9 +8,8 @@ extern struct TCB_t *runQ;
 void startThread(struct TCB_t *thread, void (*function)(void))
 {
 	void *stack = (void *)malloc(8192);
-	thread = (struct TCB_t *)malloc(sizeof(struct TCB_t));
+	thread = newItem();
 	init_TCB(thread, function, stack, 8192);
-
 	addQueue(&runQ, thread);
 }
 
@@ -23,9 +22,9 @@ void run()
 
 void yield()
 {
-	struct TCB_t *temp = runQ;
+	struct TCB_t *prev = runQ;
 	rotateQueue(&runQ);
-	swapcontext(&(temp->context), &(runQ->context));
+	swapcontext(&(prev->context), &(runQ->context));
 }
 
 #endif

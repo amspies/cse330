@@ -11,17 +11,17 @@ struct semaphore {
 void newSemaphore(struct semaphore *sem, int value)
 {
 	sem->value = value;
+	newQueue(&(sem->queue));
 }
 
 void P(struct semaphore *sem)
 {
 	sem->value--;
 	if (sem->value < 0) {
-		rotateQueue(&runQ);
+		struct TCB_t *blockedQ = runQ;
 		struct TCB_t *currThread = delQueue(&runQ);
-		addQueue(&(sem->queue), currThread);
-		while (runQ == NULL) ;
-		swapcontext(&(currThread->context), &(runQ->context));
+		addQueue(&(sem->queue), blockedQ);
+		swapcontext(&(blockedQ->context), &(runQ->context));
 	}
 }
 
@@ -29,10 +29,9 @@ void V(struct semaphore *sem)
 {
 	sem->value++;
 	if (sem->value <= 0 && sem->queue != NULL) {
-		rotateQueue(&runQ);
 		addQueue(&runQ, delQueue(&(sem->queue)));
+		yield();
 	}
-	yield();
 }
 
 #endif

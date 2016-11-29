@@ -1,34 +1,46 @@
-/* Created by Loi Nguyen & Aidan Spies */
-
 #ifndef Q_H
 #define Q_H
 
 #include "tcb.h"
 
-void newQueue(struct TCB_t **head)
-{
-	*head = NULL;
-}
+struct TCB_t *newItem();
+void newQueue(struct TCB_t **head);
+void addQueue(struct TCB_t **head, struct TCB_t *item);
+struct TCB_t *delQueue(struct TCB_t **head);
+void rotateQueue(struct TCB_t **head);
 
 struct TCB_t *newItem()
 {
 	return (struct TCB_t *)malloc(sizeof(struct TCB_t));
 }
 
+void newQueue(struct TCB_t **head)
+{
+	if (*head == NULL)
+		return;
+	else
+		*head = NULL;
+}
+
 void addQueue(struct TCB_t **head, struct TCB_t *item)
 {
-	struct TCB_t *temp = *head;
+	if (head == NULL)
+		newQueue(head);
+
+	struct TCB_t *temp = (*head);
+
 	if (temp == NULL) {
-		*head = item;
-		(*head)->next = *head;
-		(*head)->prev = *head;
-	} else if (temp->next == temp) {
-		temp->next = item;
-		temp->prev = item;
-		item->next = temp;
-		item->prev = temp;
+		(*head) = item;
+		(*head)->next = (*head);
+		(*head)->prev = (*head);
+	}
+	else if (temp->next == temp) {
+		(*head)->next = item;
+		(*head)->prev = item;
+		item->next = (*head);
+		item->prev = (*head);
 	} else {
-		while (temp->next != *head)
+		while (temp->next != (*head))
 			temp = temp->next;
 		item->next = temp->next;
 		item->prev = temp;
@@ -39,29 +51,27 @@ void addQueue(struct TCB_t **head, struct TCB_t *item)
 
 struct TCB_t *delQueue(struct TCB_t **head)
 {
-	struct TCB_t *item = *head;
-	if (item->next == item) {
-		*head = NULL;
-	} else {
-		while (item->next != *head) {
-			item = item->next;
+	struct TCB_t *item = NULL;
+
+	if (head != NULL) {
+		item = (*head);
+		if (item == NULL)
+			item = NULL;
+		else if (item->next == item)
+			(*head) = NULL;
+		else {
+			(*head)->prev->next = (*head)->next;
+			(*head)->next->prev = (*head)->prev;
+			(*head) = (*head)->next;
 		}
-		item->prev->next = item->next;
-		item->next->prev = item->prev;
 	}
 
 	return item;
 }
 
-struct TCB_t *rotateQueue(struct TCB_t **head)
+void rotateQueue(struct TCB_t **head)
 {
-	struct TCB_t *temp = NULL;
-	if (head != NULL) {
-		temp = *head;
-		*head = temp->next;
-	}
-
-	return temp;
+	addQueue(head, delQueue(head));
 }
 
 void freeItem(void *item)
@@ -76,9 +86,9 @@ void printQueue(struct TCB_t *head)
 		return;
 	}
 
-	if (head->next == head) {
+	if (head->next == head)
 		printf("\t%p\n", head);
-	} else {
+	else {
 		struct TCB_t *current = head;
 		do {
 			printf("\t%p\n", current);
