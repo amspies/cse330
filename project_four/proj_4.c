@@ -23,6 +23,8 @@ void child();
 void optionone();
 void optiontwo();
 
+/* to run Option One: comment optiontwo() and uncomment optionone() */
+/* to run Option Two: comment optionone() and uncomment optiontwo() */
 int main(int argc, char *argv[])
 {
 	/* initializes the queue where the TCBs are stored. global variable. */
@@ -45,10 +47,18 @@ void optiontwo()
 {
 	/* asking for number of children */
 	printf("How many children? ");
-	scanf("%d", &num_children);
+	choose: scanf("%d", &num_children);
+
+	/* the program can handle more than 20 children, but this limits it to 20 */
+	if (num_children > 20) {
+		printf("Please choose a number less than 21: ");
+		goto choose;
+	}
 
 	/* increase by 1 to add parent to the list */
 	num_threads = num_children + 1;
+
+	/* makes it easier to see the parent index */
 	parent_index = num_children;
 
 	puts("\nCreating threads and semaphores...");
@@ -65,7 +75,7 @@ void optiontwo()
 	/* fills the array with 0s */
 	bzero(op_two, num_children);
 
-	/* initializes semaphores for children. currently, N semaphores */
+	/* initializes semaphores for children. uses N semaphores */
 	int i;
 	for(i = 0; i < num_children; i++) {
 		s[i] = (struct semaphore *)malloc(sizeof(struct semaphore));
@@ -88,15 +98,18 @@ void optiontwo()
 
 void parent()
 {
+	int i;
 	while (1) {
-		int i;
 		P(s[parent_index]);
+
 		printf("[ ");
 		for (i = 0; i < num_children; i++) printf("%d ", op_two[i]);
 		printf("]\n");
+
 		sleep(1);
 		child_index = -1;
-		for (i = 0; i < num_children; i++) V(s[i]);
+
+		for (i = 0; i < num_threads; i++) V(s[i]);
 	}
 }
 
@@ -105,7 +118,7 @@ void child()
 	while(1) {
 		child_index++;
 		P(s[child_index]);
-		op_two[child_index]++;
+		op_two[child_index+1]++;
 		V(s[parent_index]);
 	}
 }
@@ -116,8 +129,6 @@ void child()
 
 void optionone()
 {
-	/* Option One: 1 Parent and 3 Children */
-
 	/* creates the threads for the children and parent to live in */
 	struct TCB_t *threads[NUM_THREADS];
 	puts("Creating threads and semaphores...");
@@ -127,12 +138,13 @@ void optionone()
 	s2 = (struct semaphore *)malloc(sizeof(struct semaphore));
 	s3 = (struct semaphore *)malloc(sizeof(struct semaphore));
 
-	/* initializes semaphores for 3 children, 1 parent. */
+	/* initializes semaphores for 3 children, 1 parent */
 	newSemaphore(s0, 0);
 	newSemaphore(s1, 0);
 	newSemaphore(s2, 0);
 	newSemaphore(s3, 3);
 
+	/* populates the threads with children and parent */
 	int i;
 	for (i = 0; i < NUM_THREADS; i++) {
 		if (i == 0)
@@ -166,7 +178,6 @@ void c0()
 	while(1) {
 		P(s0);
 		op_one[0]++;
-		sleep(1);
 		V(s3);
 	}
 }
@@ -176,7 +187,6 @@ void c1()
 	while(1) {
 		P(s1);
 		op_one[1]++;
-		sleep(1);
 		V(s3);
 	}
 }
@@ -186,7 +196,6 @@ void c2()
 	while(1) {
 		P(s2);
 		op_one[2]++;
-		sleep(1);
 		V(s3);
 	}
 }
