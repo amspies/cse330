@@ -1,5 +1,5 @@
 all:
-	gcc test.c -g -o test
+	gcc proj_4.c -g -o prog
 
 clean:
-	rm test
+	rm prog test
